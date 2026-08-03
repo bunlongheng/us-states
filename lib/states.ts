@@ -19,12 +19,13 @@ export interface StateData {
   difficulty: 1 | 2 | 3 | 4 | 5; // 1=easiest, 5=hardest
 }
 
-// Difficulty assignments:
-// 1 - Iconic states everyone knows (CA, TX, FL, NY, AK, HI)
-// 2 - Large/well-known states (PA, IL, OH, GA, MI, WA, CO, AZ, VA, NC)
-// 3 - Mid-recognition states (OR, NV, LA, TN, MN, WI, MO, MA, NJ, MD, SC, AL, KY, OK, IN)
-// 4 - Harder states (AR, KS, NE, IA, MS, NM, UT, CT, ME, MT, WV, ID)
-// 5 - Most confusing states (ND, SD, WY, VT, NH, RI, DE)
+// Difficulty tiers (each state's real tier is its `difficulty` field below; the
+// states named here are representative examples, not the full per-tier list):
+// 1 - Iconic states everyone knows (e.g. CA, TX, FL, NY, AK, HI)
+// 2 - Large/well-known states (e.g. PA, IL, OH, GA, MI, WA, CO, AZ, VA, NC)
+// 3 - Mid-recognition states (e.g. OR, NV, LA, TN, MN, WI, MO, MA, NJ, MD, SC, AL, KY, OK, IN)
+// 4 - Harder states (e.g. AR, KS, NE, IA, MS, NM, UT, CT, ME, MT, WV, ID)
+// 5 - Most confusing states (e.g. ND, SD, WY, VT, NH, RI, DE)
 
 export const STATES: StateData[] = [
   {

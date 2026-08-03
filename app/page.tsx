@@ -162,9 +162,12 @@ export default function StatesGame() {
     if (mode === "quiz" && !currentQ && !quizDone) startQuiz();
   }, [mode, currentQ, quizDone, startQuiz]);
 
-  // Reset quiz when difficulty changes mid-quiz
+  // Rebuild the quiz whenever difficulty changes - clearing currentQ re-runs
+  // startQuiz against the new difficulty's state pool so the queue and the total
+  // stay in sync (changing difficulty before the first answer used to leave the
+  // old queue but recompute the total).
   useEffect(() => {
-    if (mode === "quiz" && score.total > 0) {
+    if (mode === "quiz") {
       setCurrentQ(null);
       setQuizDone(false);
     }
@@ -195,9 +198,9 @@ export default function StatesGame() {
     }
   }, [isAnswering, currentQ, playSuccess, playWrong, advanceQuiz, soundOn]);
 
-  // Start timer when a new question loads
+  // Start the timer for every question (startTimer no-ops when the timer is off).
   useEffect(() => {
-    if (mode === "quiz" && currentQ && !quizDone && !isAnswering && score.total > 0) startTimer();
+    if (mode === "quiz" && currentQ && !quizDone && !isAnswering) startTimer();
     return () => stopTimer();
   }, [currentQ, mode, quizDone, isAnswering, startTimer, stopTimer]);
 
