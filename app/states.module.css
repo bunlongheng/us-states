@@ -419,42 +419,8 @@
 }
 
 
-/* -------- Region hover (legend hover highlights whole region) -------- */
-.regionHovered {
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.35));
-  transition: filter 0.15s;
-}
-
-/* -------- Selected (study) -------- */
-.selected {
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6)) brightness(1.3);
-  stroke: #fff !important;
-  stroke-width: 2.5 !important;
-}
-
-/* -------- Quiz highlight (nameIt) — pulsing -------- */
-.quizHighlight {
-  fill: #facc15 !important;
-  stroke: #fff !important;
-  stroke-width: 2.5 !important;
-  animation: pulse 1s ease-in-out infinite;
-}
-
-/* -------- Wrong answer — red flash + wiggle -------- */
-.wrongAnswer {
-  fill: #ef4444 !important;
-  stroke: #fff !important;
-  stroke-width: 2.5 !important;
-  animation: wiggle 0.4s ease, flashRed 0.4s ease;
-}
-
-/* -------- Correct answer — green flash -------- */
-.correctAnswer {
-  fill: #22c55e !important;
-  stroke: #fff !important;
-  stroke-width: 2.5 !important;
-  animation: flashGreen 0.6s ease;
-}
+/* Map state fills/strokes (region hover, selected, quiz highlight/right/wrong) are
+   computed inline in components/StateMap.tsx since the static-SVG rewrite. */
 
 /* ============================================================
    STATE LABELS
@@ -1275,10 +1241,7 @@
 
 /* Respect reduced-motion: kill the shimmer and any pulse/wiggle/flash animation. */
 @media (prefers-reduced-motion: reduce) {
-  .loadingMap,
-  .quizHighlight,
-  .wrongAnswer,
-  .correctAnswer {
+  .loadingMap {
     animation: none !important;
   }
   .container * {
