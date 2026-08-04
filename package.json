@@ -1,15 +1,16 @@
 {
   "name": "us-states",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3032",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/quiz.test.ts",
-    "prepare": "husky || true"
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.tests.json",
+    "test": "node --experimental-strip-types --test tests/quiz.test.ts tests/quizEngine.test.ts tests/states.test.ts",
+    "prepare": "husky || true",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
@@ -19,6 +20,7 @@
     "react-simple-maps": "^3.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",

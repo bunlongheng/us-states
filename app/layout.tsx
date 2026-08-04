@@ -1,6 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+const title = "US States";
+const description =
+  "Interactive US States game - study and quiz yourself on all 50 states, capitals, regions, and fun facts on a live map.";
+const url = "https://us-states-bheng.vercel.app";
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -8,13 +13,33 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "US States",
-  description: "Interactive US States game - study and quiz yourself on all 50 states, capitals, regions, and fun facts on a live map.",
+  metadataBase: new URL(url),
+  title,
+  description,
+  applicationName: title,
+  openGraph: {
+    title,
+    description,
+    url,
+    siteName: title,
+    type: "website",
+    images: [{ url: "/icon.png", width: 512, height: 512, alt: "US States app icon" }],
+  },
+  twitter: {
+    card: "summary",
+    title,
+    description,
+    images: ["/icon.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Start the map geometry download in parallel with the app chunk. */}
+        <link rel="preload" href="/states-10m.json" as="fetch" crossOrigin="anonymous" />
+      </head>
       <body>{children}</body>
     </html>
   );

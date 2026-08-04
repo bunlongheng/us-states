@@ -1,3 +1,14 @@
+// The 8 US regions the map colors and the legend lists, in left-to-right order.
+export type Region =
+  | "Pacific"
+  | "West"
+  | "Mountain West"
+  | "Midwest"
+  | "South"
+  | "Southwest"
+  | "Southeast"
+  | "Northeast";
+
 export interface StateData {
   id: string;
   name: string;
@@ -6,7 +17,7 @@ export interface StateData {
   capitalPop: string;
   unionOrder: number;
   unionDate: string;
-  region: string;
+  region: Region;
   areaSqMiles: string;
   pronunciation: string;
   funFacts: string[];
@@ -64,8 +75,8 @@ export const STATES: StateData[] = [
     areaSqMiles: "663,268 sq mi",
     pronunciation: "uh-LAS-kuh",
     funFacts: [
-      "Alaska is the largest US state by area — bigger than the next three largest states combined.",
-      "Alaska has more coastline than all other US states combined — over 33,000 miles.",
+      "Alaska is the largest US state by area - bigger than the next three largest states combined.",
+      "Alaska has more coastline than all other US states combined - over 33,000 miles.",
       "The Northern Lights (Aurora Borealis) can be seen in Alaska up to 243 days per year.",
     ],
     stateBird: "Willow Ptarmigan",
@@ -112,7 +123,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "53,179 sq mi",
     pronunciation: "AR-kan-saw",
     funFacts: [
-      "Arkansas is the only US state where diamonds are mined commercially — visitors can dig for them at Crater of Diamonds State Park.",
+      "Arkansas is the only US state where diamonds are mined commercially - visitors can dig for them at Crater of Diamonds State Park.",
       "The state is called the 'Natural State' due to its stunning natural scenery and outdoor beauty.",
       "Arkansas produces more than 50% of all rice grown in the United States.",
     ],
@@ -136,7 +147,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "163,696 sq mi",
     pronunciation: "kal-ih-FOR-nyuh",
     funFacts: [
-      "California has the largest economy of any US state — if it were a country, it would be the 5th largest economy in the world.",
+      "California has the largest economy of any US state - if it were a country, it would be the 5th largest economy in the world.",
       "The tallest trees on Earth, the coastal redwoods, grow in California and can reach over 380 feet tall.",
       "California produces more than a third of all vegetables and two-thirds of all fruits and nuts grown in the US.",
     ],
@@ -160,7 +171,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "104,094 sq mi",
     pronunciation: "kol-uh-RAD-oh",
     funFacts: [
-      "Colorado has 58 mountain peaks that are higher than 14,000 feet — nicknamed 'fourteeners.'",
+      "Colorado has 58 mountain peaks that are higher than 14,000 feet - nicknamed 'fourteeners.'",
       "Denver is nicknamed the 'Mile High City' because it sits at exactly 5,280 feet above sea level.",
       "Colorado is home to the world's largest flat-top mountain, Grand Mesa, covering 500 square miles.",
     ],
@@ -186,7 +197,7 @@ export const STATES: StateData[] = [
     funFacts: [
       "Connecticut was the first US state to have a law library, established in 1789.",
       "The lollipop was invented in New Haven, Connecticut, in 1908 at the Bradley Smith Company.",
-      "Connecticut is home to Yale University, founded in 1701 — one of the oldest universities in the US.",
+      "Connecticut is home to Yale University, founded in 1701 - one of the oldest universities in the US.",
     ],
     stateBird: "American Robin",
     stateFlower: "Mountain Laurel",
@@ -233,7 +244,7 @@ export const STATES: StateData[] = [
     pronunciation: "FLOR-ih-duh",
     funFacts: [
       "Florida is home to the world's first commercial airline route, inaugurated in 1914 between St. Petersburg and Tampa.",
-      "Florida has the longest coastline of any state in the continental US — over 1,350 miles.",
+      "Florida has the longest coastline of any state in the continental US - over 1,350 miles.",
       "More than 1,000 native plant species can be found in the Florida Everglades, the largest subtropical wilderness in the US.",
     ],
     stateBird: "Mockingbird",
@@ -257,7 +268,7 @@ export const STATES: StateData[] = [
     pronunciation: "JOR-juh",
     funFacts: [
       "Georgia is the largest state east of the Mississippi River.",
-      "Georgia produces more peanuts than any other state — about 42% of the US total.",
+      "Georgia produces more peanuts than any other state - about 42% of the US total.",
       "The Okefenokee Swamp, one of the world's largest intact freshwater ecosystems, is located in southern Georgia.",
     ],
     stateBird: "Brown Thrasher",
@@ -280,8 +291,8 @@ export const STATES: StateData[] = [
     areaSqMiles: "10,932 sq mi",
     pronunciation: "huh-WY-ee",
     funFacts: [
-      "Hawaii is the only US state made entirely of islands — it has 137 islands in total.",
-      "Hawaii's Mauna Kea volcano is the tallest mountain on Earth when measured from its oceanic base — over 33,000 feet.",
+      "Hawaii is the only US state made entirely of islands - it has 137 islands in total.",
+      "Hawaii's Mauna Kea volcano is the tallest mountain on Earth when measured from its oceanic base - over 33,000 feet.",
       "Hawaii is the only US state that grows coffee commercially and is famous for its Kona coffee.",
     ],
     stateBird: "Nene (Hawaiian Goose)",
@@ -328,7 +339,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "57,914 sq mi",
     pronunciation: "il-ih-NOY",
     funFacts: [
-      "Illinois is known as the 'Land of Lincoln' — Abraham Lincoln spent most of his adult life there before becoming president.",
+      "Illinois is known as the 'Land of Lincoln' - Abraham Lincoln spent most of his adult life there before becoming president.",
       "Chicago, Illinois, was home to the world's first skyscraper, built in 1885.",
       "Illinois has 102 counties and is a top producer of soybeans and corn in the US.",
     ],
@@ -402,7 +413,7 @@ export const STATES: StateData[] = [
     funFacts: [
       "Kansas is located in the geographic center of the continental United States.",
       "Kansas is the top wheat-producing state in the US, earning it the nickname 'The Wheat State.'",
-      "The world's largest ball of twine — over 17,000 pounds — can be found in Cawker City, Kansas.",
+      "The world's largest ball of twine - over 17,000 pounds - can be found in Cawker City, Kansas.",
     ],
     stateBird: "Western Meadowlark",
     stateFlower: "Sunflower",
@@ -424,7 +435,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "40,408 sq mi",
     pronunciation: "ken-TUK-ee",
     funFacts: [
-      "Kentucky is home to the world's longest known cave system — Mammoth Cave — with over 400 mapped miles.",
+      "Kentucky is home to the world's longest known cave system - Mammoth Cave - with over 400 mapped miles.",
       "The Kentucky Derby, held annually in Louisville, is the oldest continuously run horse race in the US.",
       "Kentucky produces 95% of the world's bourbon whiskey.",
     ],
@@ -472,7 +483,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "35,380 sq mi",
     pronunciation: "MAYN",
     funFacts: [
-      "Maine is the only US state that borders exactly one other state — New Hampshire.",
+      "Maine is the only US state that borders exactly one other state - New Hampshire.",
       "Maine produces 99% of all commercially harvested blueberries in the United States.",
       "Portland, Maine, has more restaurants per capita than any other city in the US.",
     ],
@@ -497,7 +508,7 @@ export const STATES: StateData[] = [
     pronunciation: "MAIR-ih-land",
     funFacts: [
       "Maryland is home to the US Naval Academy, founded in 1845 in Annapolis.",
-      "The Maryland Blue Crab is famous worldwide — Maryland harvests millions of pounds annually from the Chesapeake Bay.",
+      "The Maryland Blue Crab is famous worldwide - Maryland harvests millions of pounds annually from the Chesapeake Bay.",
       "Maryland was the first state to establish a state income tax, back in 1733.",
     ],
     stateBird: "Baltimore Oriole",
@@ -568,7 +579,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "86,936 sq mi",
     pronunciation: "min-ih-SOH-tuh",
     funFacts: [
-      "Minnesota has more than 10,000 lakes — it's nicknamed 'The Land of 10,000 Lakes.'",
+      "Minnesota has more than 10,000 lakes - it's nicknamed 'The Land of 10,000 Lakes.'",
       "Minnesota is home to the headwaters of the Mississippi River, the longest river in North America.",
       "The Mall of America in Bloomington, Minnesota, is the largest mall in the US with over 520 stores.",
     ],
@@ -616,8 +627,8 @@ export const STATES: StateData[] = [
     areaSqMiles: "69,707 sq mi",
     pronunciation: "muh-ZUR-ee",
     funFacts: [
-      "Missouri is called the 'Gateway to the West' — the iconic Gateway Arch in St. Louis is the world's tallest arch at 630 feet.",
-      "Missouri is one of only two US states to have two cities among the top 20 nationally — Kansas City and St. Louis.",
+      "Missouri is called the 'Gateway to the West' - the iconic Gateway Arch in St. Louis is the world's tallest arch at 630 feet.",
+      "Missouri is one of only two US states to have two cities among the top 20 nationally - Kansas City and St. Louis.",
       "The ice cream cone was invented at the 1904 World's Fair in St. Louis, Missouri.",
     ],
     stateBird: "Eastern Bluebird",
@@ -642,7 +653,7 @@ export const STATES: StateData[] = [
     funFacts: [
       "Montana is the fourth largest US state by area and has more cattle than people.",
       "Glacier National Park in Montana has over 700 lakes and more than 200 species of birds.",
-      "Montana has the longest undammed river in the contiguous US — the Yellowstone River.",
+      "Montana has the longest undammed river in the contiguous US - the Yellowstone River.",
     ],
     stateBird: "Western Meadowlark",
     stateFlower: "Bitterroot",
@@ -688,7 +699,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "110,572 sq mi",
     pronunciation: "nuh-VAD-uh",
     funFacts: [
-      "Nevada is the driest state in the US — most of it is desert or semi-arid.",
+      "Nevada is the driest state in the US - most of it is desert or semi-arid.",
       "Las Vegas, Nevada, has more hotel rooms than any other city in the world.",
       "Nevada is the largest gold-producing state in the US and one of the top producers in the world.",
     ],
@@ -713,7 +724,7 @@ export const STATES: StateData[] = [
     pronunciation: "noo HAMP-shur",
     funFacts: [
       "New Hampshire holds the first presidential primary election every four years, giving it outsized political influence.",
-      "The highest wind speed ever recorded on Earth's surface — 231 mph — was measured atop Mount Washington in 1934.",
+      "The highest wind speed ever recorded on Earth's surface - 231 mph - was measured atop Mount Washington in 1934.",
       "New Hampshire is the only state with no general sales tax and no income tax on wages.",
     ],
     stateBird: "Purple Finch",
@@ -856,7 +867,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "44,826 sq mi",
     pronunciation: "oh-HY-oh",
     funFacts: [
-      "Ohio has produced more US presidents than any other state — seven presidents were born there.",
+      "Ohio has produced more US presidents than any other state - seven presidents were born there.",
       "The first professional baseball team, the Cincinnati Red Stockings, was formed in Ohio in 1869.",
       "Ohio is a top manufacturer of plastics, rubber products, and fabricated metal goods.",
     ],
@@ -880,7 +891,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "69,899 sq mi",
     pronunciation: "oh-kluh-HOH-muh",
     funFacts: [
-      "Oklahoma has more man-made lakes than any other state — over 200 reservoirs.",
+      "Oklahoma has more man-made lakes than any other state - over 200 reservoirs.",
       "Oklahoma is one of the most tornado-prone states in the US, sitting in 'Tornado Alley.'",
       "Oklahoma has the largest Native American population of any US state.",
     ],
@@ -905,7 +916,7 @@ export const STATES: StateData[] = [
     pronunciation: "OR-ih-gun",
     funFacts: [
       "Crater Lake in Oregon is the deepest lake in the United States at 1,943 feet deep.",
-      "Oregon has the only state flag in the US with different images on each side — a beaver on the back.",
+      "Oregon has the only state flag in the US with different images on each side - a beaver on the back.",
       "Oregon's Timberline Lodge on Mount Hood was used as the exterior of the Overlook Hotel in The Shining.",
     ],
     stateBird: "Western Meadowlark",
@@ -954,7 +965,7 @@ export const STATES: StateData[] = [
     funFacts: [
       "Rhode Island is the smallest US state by area yet has the longest official name: 'State of Rhode Island and Providence Plantations.'",
       "Rhode Island was the first state to declare independence from Britain on May 4, 1776.",
-      "Newport, Rhode Island, hosts the oldest jazz festival in the world — the Newport Jazz Festival, started in 1954.",
+      "Newport, Rhode Island, hosts the oldest jazz festival in the world - the Newport Jazz Festival, started in 1954.",
     ],
     stateBird: "Rhode Island Red",
     stateFlower: "Violet",
@@ -977,7 +988,7 @@ export const STATES: StateData[] = [
     pronunciation: "south kair-uh-LY-nuh",
     funFacts: [
       "South Carolina was the first state to secede from the Union in 1860, triggering the Civil War.",
-      "South Carolina grows more peaches than Georgia — earning it a competing nickname, the 'Tastier Peach State.'",
+      "South Carolina grows more peaches than Georgia - earning it a competing nickname, the 'Tastier Peach State.'",
       "Fort Sumter in Charleston Harbor is where the first shots of the Civil War were fired on April 12, 1861.",
     ],
     stateBird: "Carolina Wren",
@@ -1024,8 +1035,8 @@ export const STATES: StateData[] = [
     areaSqMiles: "42,144 sq mi",
     pronunciation: "ten-ih-SEE",
     funFacts: [
-      "Tennessee is the birthplace of country music — Nashville's 'Music Row' is the heart of the industry.",
-      "Tennessee borders eight other states — more than any other US state.",
+      "Tennessee is the birthplace of country music - Nashville's 'Music Row' is the heart of the industry.",
+      "Tennessee borders eight other states - more than any other US state.",
       "Graceland, Elvis Presley's home in Memphis, is the second most visited house in the US after the White House.",
     ],
     stateBird: "Mockingbird",
@@ -1072,7 +1083,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "84,897 sq mi",
     pronunciation: "YOO-taw",
     funFacts: [
-      "Utah has five national parks — Arches, Bryce Canyon, Canyonlands, Capitol Reef, and Zion — more than any neighboring state.",
+      "Utah has five national parks - Arches, Bryce Canyon, Canyonlands, Capitol Reef, and Zion - more than any neighboring state.",
       "The Great Salt Lake is the largest saltwater lake in the Western Hemisphere.",
       "Utah was the site of the completion of the first transcontinental railroad at Promontory Summit in 1869.",
     ],
@@ -1097,7 +1108,7 @@ export const STATES: StateData[] = [
     pronunciation: "ver-MONT",
     funFacts: [
       "Vermont is the smallest state in New England and the second least populated state in the US.",
-      "Vermont produces more maple syrup per capita than any other US state — about 40% of the national supply.",
+      "Vermont produces more maple syrup per capita than any other US state - about 40% of the national supply.",
       "Vermont was the first state to abolish slavery, in 1777, before it even joined the union.",
     ],
     stateBird: "Hermit Thrush",
@@ -1120,7 +1131,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "42,775 sq mi",
     pronunciation: "ver-JIN-yuh",
     funFacts: [
-      "Virginia is nicknamed the 'Mother of Presidents' — eight US presidents were born there, more than any other state.",
+      "Virginia is nicknamed the 'Mother of Presidents' - eight US presidents were born there, more than any other state.",
       "Jamestown, Virginia, founded in 1607, was the first permanent English settlement in North America.",
       "The Pentagon, the world's largest office building, is located in Arlington, Virginia.",
     ],
@@ -1145,7 +1156,7 @@ export const STATES: StateData[] = [
     pronunciation: "WOSH-ing-ton",
     funFacts: [
       "Washington is the only US state named after a president.",
-      "Washington produces more apples than any other US state — nearly 60% of all apples grown in the nation.",
+      "Washington produces more apples than any other US state - nearly 60% of all apples grown in the nation.",
       "Mount Rainier in Washington is the most heavily glaciated peak in the contiguous United States.",
     ],
     stateBird: "Willow Goldfinch",
@@ -1168,7 +1179,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "24,230 sq mi",
     pronunciation: "west ver-JIN-yuh",
     funFacts: [
-      "West Virginia is the only state formed by seceding from another state — it broke off from Virginia during the Civil War.",
+      "West Virginia is the only state formed by seceding from another state - it broke off from Virginia during the Civil War.",
       "West Virginia has the lowest mean elevation of any state east of the Mississippi and the most varied terrain.",
       "New River Gorge in West Virginia has the world's longest single-span steel arch bridge.",
     ],
@@ -1192,7 +1203,7 @@ export const STATES: StateData[] = [
     areaSqMiles: "65,496 sq mi",
     pronunciation: "wis-KON-sin",
     funFacts: [
-      "Wisconsin produces more cheese than any other US state — about 25% of all US cheese.",
+      "Wisconsin produces more cheese than any other US state - about 25% of all US cheese.",
       "Wisconsin has about 15,000 lakes and is a leading dairy state, earning the nickname 'America's Dairyland.'",
       "The Republican Party was founded in Ripon, Wisconsin, in 1854.",
     ],

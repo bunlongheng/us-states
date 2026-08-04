@@ -6,7 +6,10 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV !== "production";
 
 // The app is fully self-contained: the US topojson is served from /public, so
-// connect-src stays 'self'. data: covers the inline SVG favicon.
+// connect-src stays 'self'. 'unsafe-inline' in script-src is required for Next's
+// framework bootstrap scripts on a statically prerendered page (a nonce would force
+// dynamic rendering); the app itself has no user input and no dangerouslySetInnerHTML,
+// so there is no first-party injection surface. object-src is locked to 'none'.
 const csp = [
   "default-src 'self'",
   "img-src 'self' data:",
@@ -14,9 +17,11 @@ const csp = [
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "font-src 'self'",
   "connect-src 'self'",
+  "object-src 'none'",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
+  "upgrade-insecure-requests",
 ].join("; ");
 
 const securityHeaders = [
@@ -45,6 +50,11 @@ const nextConfig: NextConfig = {
       {
         source: "/",
         headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
+      },
+      {
+        // The US geometry never changes - cache it hard (rename the file if it ever does).
+        source: "/states-10m.json",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ];
   },

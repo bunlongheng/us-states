@@ -1,8 +1,8 @@
-import type { StateData } from "./states";
+import type { Region, StateData } from "./states";
 
 // Ordered geographically left -> right on the US map.
 // Colors chosen from distinct segments of the 12-step color wheel - no duplicates.
-export const REGION_COLORS: Record<string, string> = {
+export const REGION_COLORS: Record<Region, string> = {
   Pacific: "#06b6d4", // cyan       - ocean/AK/HI
   West: "#16a085", // teal          - left coast
   "Mountain West": "#7c3aed", // violet - Rockies
@@ -14,7 +14,7 @@ export const REGION_COLORS: Record<string, string> = {
 };
 
 // Legend displayed in left-to-right geographic order.
-export const LEGEND_ORDER = [
+export const LEGEND_ORDER: readonly Region[] = [
   "Pacific",
   "West",
   "Mountain West",
@@ -23,7 +23,7 @@ export const LEGEND_ORDER = [
   "Southwest",
   "Southeast",
   "Northeast",
-] as const;
+];
 
 export function invertHex(hex: string): string {
   const num = parseInt(hex.replace("#", ""), 16);

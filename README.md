@@ -6,6 +6,7 @@
 
 Study every state's capital, region, bird, flower, motto, and fun facts, then test yourself with two quiz modes across 5 difficulty tiers.
 
+[![CI](https://github.com/bunlongheng/us-states/actions/workflows/ci.yml/badge.svg)](https://github.com/bunlongheng/us-states/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
@@ -20,6 +21,9 @@ Study every state's capital, region, bird, flower, motto, and fun facts, then te
 ## Features
 
 - **Study mode** - click any state to see its capital, region, area, statehood order, state bird, state flower, motto, and fun facts, with a pronounce button (Web Speech).
+
+<img src="docs/demo-study.png" alt="US States study mode - clicking a state shows its capital, region, and fun facts" width="820">
+
 - **Quiz mode** - two question types, mixed at random: *name the highlighted state* (multiple choice) and *find the state on the map* (click it).
 - **5 difficulty tiers** - cumulative, from iconic states up to the most confusing ones. Higher tiers hide the state labels and shorten the timer.
 - **Color-coded regions** - 8 US regions, each with a distinct color and an interactive legend.
@@ -31,7 +35,7 @@ Study every state's capital, region, bird, flower, motto, and fun facts, then te
 |------|--------|
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict) |
-| Styling | Tailwind CSS 4 + CSS Modules |
+| Styling | CSS Modules (Tailwind 4 base via PostCSS) |
 | Map | [react-simple-maps](https://www.react-simple-maps.io/) + self-hosted [us-atlas](https://github.com/topojson/us-atlas) topojson |
 | Effects | canvas-confetti, Web Audio, Web Speech |
 | Tests | `node:test` (pure quiz logic) |
