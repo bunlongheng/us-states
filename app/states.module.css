@@ -418,9 +418,6 @@
   outline: none;
 }
 
-.findItHover:hover {
-  cursor: crosshair;
-}
 
 /* -------- Region hover (legend hover highlights whole region) -------- */
 .regionHovered {
@@ -889,9 +886,6 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.legendItemSelected .legendLabel {
-  color: #fff;
-}
 
 .legendDot {
   width: 9px;

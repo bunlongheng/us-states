@@ -69,11 +69,27 @@ test("timer: when enabled, a question times out and reveals the answer", async (
   await expect(page.getByText("1 answered")).toBeVisible();
 });
 
-// Note: the victory card, best-score persistence, retry-missed pool, and queue-to-done
-// transition are covered deterministically at the reducer level in tests/quizEngine.test.ts
-// (playAllCorrect -> done, RESET, missed tracking, retry distractor pool). A full-run e2e
-// was intentionally omitted: driving 11 sub-second reveals through tiny SVG click targets
-// is flaky, and the reducer tests already prove the completion logic.
+test("name-it: completing a full run reaches the victory card and writes a best score", async ({ page }) => {
+  test.setTimeout(60000);
+  await page.goto("/");
+  await setDifficulty(page, 1); // smallest pool (11 states)
+  await setQuestionMode(page, "Name it"); // large option buttons - no flaky SVG targets
+  const victory = page.getByRole("heading", { name: "AMAZING!" });
+
+  // Answer each question by clicking an option. Playwright's click auto-waits for the
+  // button to be enabled, so it naturally paces around each reveal; the final click (when
+  // the victory card has replaced the options) is expected to have no target.
+  for (let i = 0; i < 13; i++) {
+    if (await victory.isVisible().catch(() => false)) break;
+    await page.getByTestId("option").first().click({ timeout: 6000 }).catch(() => {});
+  }
+  await expect(victory).toBeVisible({ timeout: 8000 });
+  await expect(page.getByText(/You finished all \d+ states/)).toBeVisible();
+  // A full run persists a best score for this difficulty.
+  const best = await page.evaluate(() => localStorage.getItem("us-states:best:1"));
+  expect(best).not.toBeNull();
+  expect(Number(best)).toBeGreaterThanOrEqual(0);
+});
 
 test("difficulty setting persists across a reload", async ({ page }) => {
   await page.goto("/");

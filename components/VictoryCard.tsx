@@ -50,14 +50,14 @@ export function VictoryCard(props: {
 
         {missed.length > 0 && (
           <button className={styles.restartBtn} onClick={onRetryMissed}>
-            🎯 Retry missed ({missed.length})
+            <span aria-hidden="true">🎯</span> Retry missed ({missed.length})
           </button>
         )}
         <button className={styles.restartBtn} onClick={onPlayAgain}>
-          🔄 Play Again
+          <span aria-hidden="true">🔄</span> Play Again
         </button>
         <button className={styles.studyModeBtn} onClick={onStudy}>
-          📖 Study Mode
+          <span aria-hidden="true">📖</span> Study Mode
         </button>
       </div>
     </div>
