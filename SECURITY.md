@@ -1,4 +1,4 @@
-## Security Policy
+# Security Policy
 
 US States is a client-side static game with no backend, auth, or user data, so the attack surface is minimal.
 

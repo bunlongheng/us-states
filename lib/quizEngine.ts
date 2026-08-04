@@ -1,23 +1,26 @@
 import type { StateData } from "./states";
 import { shuffle, getOptions } from "./quiz.ts";
 
-// The quiz as an explicit state machine. All transitions are pure functions of
-// (state, action) so the whole game loop is unit-testable without a DOM. The only
-// non-determinism is question ordering / option selection (shuffle + getOptions +
-// the mixed coin-flip), which the reducer delegates to lib/quiz.ts; every score,
-// phase, reveal, and missed-tracking transition below is deterministic.
+// The quiz as an explicit, fully PURE state machine. All randomness (question order,
+// per-question type, multiple-choice options) is resolved once in initQuiz - a factory
+// that accepts an injectable rng - so quizReducer itself is a pure function of
+// (state, action): every score, phase, reveal, and missed transition is deterministic
+// and each is unit-tested.
 
 export type QuizType = "nameIt" | "findIt";
 export type QuestionMode = "mixed" | "nameIt" | "findIt";
 export type Phase = "asking" | "revealing" | "done";
 
+export interface Question {
+  state: StateData;
+  quizType: QuizType;
+  options: StateData[]; // 4 choices for nameIt, empty for findIt
+}
+
 export interface QuizState {
   mode: QuestionMode;
-  pool: StateData[];
-  queue: StateData[];
-  current: StateData | null;
-  quizType: QuizType;
-  options: StateData[];
+  queue: Question[]; // upcoming, excluding current
+  current: Question | null;
   score: { correct: number; total: number };
   phase: Phase;
   wrongId: string | null;
@@ -28,63 +31,51 @@ export interface QuizState {
 }
 
 export type QuizAction =
-  | { type: "START"; pool: StateData[]; mode: QuestionMode }
   | { type: "ANSWER"; choice: StateData }
   | { type: "TIMEOUT" }
-  | { type: "ADVANCE" };
+  | { type: "ADVANCE" }
+  | { type: "RESET"; state: QuizState }; // carries a state pre-built by initQuiz (keeps rng out of the reducer)
 
-function pickType(mode: QuestionMode): QuizType {
-  if (mode === "mixed") return Math.random() < 0.5 ? "nameIt" : "findIt";
+export interface InitOptions {
+  distractors?: StateData[]; // pool the wrong nameIt options are drawn from (defaults to the question pool)
+  rng?: () => number;
+}
+
+function pickType(mode: QuestionMode, rng: () => number): QuizType {
+  if (mode === "mixed") return rng() < 0.5 ? "nameIt" : "findIt";
   return mode;
 }
 
-// Load the next question from a queue, or transition to "done" when it is empty.
-function loadFrom(queue: StateData[], state: QuizState): QuizState {
-  if (queue.length === 0) {
-    return { ...state, phase: "done", current: null, quizType: state.quizType, options: [], wrongId: null, revealId: null, verdict: null };
-  }
-  const [next, ...rest] = queue;
-  const quizType = pickType(state.mode);
+export function initQuiz(pool: StateData[], mode: QuestionMode, opts: InitOptions = {}): QuizState {
+  const rng = opts.rng ?? Math.random;
+  const distractors = opts.distractors ?? pool;
+  const questions: Question[] = shuffle(pool, rng).map((state) => {
+    const quizType = pickType(mode, rng);
+    return { state, quizType, options: quizType === "nameIt" ? getOptions(state, distractors, rng) : [] };
+  });
   return {
-    ...state,
-    queue: rest,
-    current: next,
-    quizType,
-    options: quizType === "nameIt" ? getOptions(next, state.pool) : [],
-    phase: "asking",
-    wrongId: null,
-    revealId: null,
-    verdict: null,
-  };
-}
-
-export function initQuiz(pool: StateData[], mode: QuestionMode): QuizState {
-  const base: QuizState = {
     mode,
-    pool,
-    queue: [],
-    current: null,
-    quizType: "nameIt",
-    options: [],
+    queue: questions.slice(1),
+    current: questions[0] ?? null,
     score: { correct: 0, total: 0 },
-    phase: "asking",
+    phase: questions.length > 0 ? "asking" : "done",
     wrongId: null,
     revealId: null,
     missed: [],
     verdict: null,
     total: pool.length,
   };
-  return loadFrom(shuffle(pool), base);
 }
 
 export function quizReducer(state: QuizState, action: QuizAction): QuizState {
   switch (action.type) {
-    case "START":
-      return initQuiz(action.pool, action.mode);
+    case "RESET":
+      return action.state;
 
     case "ANSWER": {
       if (state.phase !== "asking" || !state.current) return state;
-      const correct = action.choice.id === state.current.id;
+      const answer = state.current.state;
+      const correct = action.choice.id === answer.id;
       if (correct) {
         const nextCorrect = state.score.correct + 1;
         return {
@@ -92,7 +83,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
           phase: "revealing",
           score: { correct: nextCorrect, total: state.score.total + 1 },
           wrongId: null,
-          revealId: state.current.id,
+          revealId: answer.id,
           verdict: `Correct! ${nextCorrect} of ${state.total}`,
         };
       }
@@ -101,28 +92,38 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         phase: "revealing",
         score: { ...state.score, total: state.score.total + 1 },
         wrongId: action.choice.id,
-        revealId: state.current.id, // reveal the real answer so the user learns it
-        missed: [...state.missed, state.current],
-        verdict: `Not quite - that was ${state.current.name}`,
+        revealId: answer.id, // reveal the real answer so the user learns it
+        missed: [...state.missed, answer],
+        verdict: `Not quite - that was ${answer.name}`,
       };
     }
 
     case "TIMEOUT": {
       if (state.phase !== "asking" || !state.current) return state;
+      const answer = state.current.state;
       return {
         ...state,
         phase: "revealing",
         score: { ...state.score, total: state.score.total + 1 },
         wrongId: null,
-        revealId: state.current.id,
-        missed: [...state.missed, state.current],
-        verdict: `Time's up - that was ${state.current.name}`,
+        revealId: answer.id,
+        missed: [...state.missed, answer],
+        verdict: `Time's up - that was ${answer.name}`,
       };
     }
 
     case "ADVANCE": {
       if (state.phase !== "revealing") return state;
-      return loadFrom(state.queue, state);
+      const [next, ...rest] = state.queue;
+      return {
+        ...state,
+        queue: rest,
+        current: next ?? null,
+        phase: next ? "asking" : "done",
+        wrongId: null,
+        revealId: null,
+        verdict: null,
+      };
     }
 
     default:

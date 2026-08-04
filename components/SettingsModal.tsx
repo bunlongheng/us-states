@@ -2,9 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import type { QuestionMode } from "@/lib/quizEngine";
+import type { Difficulty } from "@/lib/settings";
 import styles from "@/app/states.module.css";
-
-type Difficulty = 1 | 2 | 3 | 4 | 5;
 
 const QUESTION_MODES: { value: QuestionMode; label: string }[] = [
   { value: "mixed", label: "Mixed" },

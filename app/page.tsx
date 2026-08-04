@@ -3,10 +3,9 @@
 import dynamic from "next/dynamic";
 import styles from "./states.module.css";
 
-// The game is fully client-interactive (canvas, audio, a projected SVG map that
-// react-simple-maps renders with sub-pixel drift between server and client), so it
-// is loaded client-only. The skeleton below is the real loading state until the
-// chunk arrives, and rendering client-only also sidesteps the map hydration warning.
+// The game reads persisted settings from localStorage during init and uses canvas /
+// Web Audio, so it is loaded client-only. The skeleton below is the real loading
+// state shown until the chunk arrives.
 const Game = dynamic(() => import("@/components/Game"), {
   ssr: false,
   loading: () => (

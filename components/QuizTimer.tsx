@@ -32,6 +32,12 @@ export function QuizTimer({ seconds, onTimeout }: { seconds: number; onTimeout: 
   }, []);
 
   return (
-    <div className={`${styles.timerDisplay} ${left <= 3 ? styles.timerCritical : ""}`}>{left}s</div>
+    <div
+      className={`${styles.timerDisplay} ${left <= 3 ? styles.timerCritical : ""}`}
+      role="timer"
+      aria-label={`${left} seconds left`}
+    >
+      {left}s
+    </div>
   );
 }

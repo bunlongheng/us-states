@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { STATES, type StateData } from "@/lib/states";
 import { quizReducer, initQuiz, type QuestionMode } from "@/lib/quizEngine";
+import { loadSettings, saveSettings, readBest, writeBest, type Difficulty, type Settings } from "@/lib/settings";
 import { useGameAudio, prefersReducedMotion } from "@/lib/useGameAudio";
 import { StateMap } from "./StateMap";
 import { StudyPanel } from "./StudyPanel";
@@ -12,77 +13,46 @@ import { VictoryCard } from "./VictoryCard";
 import { SettingsModal } from "./SettingsModal";
 import styles from "@/app/states.module.css";
 
-type Difficulty = 1 | 2 | 3 | 4 | 5;
 type Mode = "study" | "quiz";
 
 const TIMER_SECONDS: Record<Difficulty, number> = { 1: 30, 2: 20, 3: 10, 4: 5, 5: 3 };
-const SETTINGS_KEY = "us-states:settings";
-const bestKey = (d: Difficulty) => `us-states:best:${d}`;
-
-const DEFAULT_SETTINGS = { difficulty: 1 as Difficulty, soundOn: true, timerOn: false, questionMode: "mixed" as QuestionMode };
-
-function loadSettings(): typeof DEFAULT_SETTINGS {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    const p = JSON.parse(raw);
-    const difficulty = ([1, 2, 3, 4, 5] as const).includes(p.difficulty) ? (p.difficulty as Difficulty) : 1;
-    const questionMode = (["mixed", "nameIt", "findIt"] as const).includes(p.questionMode) ? (p.questionMode as QuestionMode) : "mixed";
-    return { difficulty, soundOn: p.soundOn !== false, timerOn: !!p.timerOn, questionMode };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-}
-
-function readBest(d: Difficulty): number {
-  try {
-    return Number(localStorage.getItem(bestKey(d))) || 0;
-  } catch {
-    return 0;
-  }
-}
-
 const poolFor = (d: Difficulty) => STATES.filter((s) => s.difficulty <= d);
 
 export default function Game() {
-  const initial = useMemo(() => loadSettings(), []);
-  const [difficulty, setDifficulty] = useState<Difficulty>(initial.difficulty);
-  const [soundOn, setSoundOn] = useState(initial.soundOn);
-  const [timerOn, setTimerOn] = useState(initial.timerOn);
-  const [questionMode, setQuestionMode] = useState<QuestionMode>(initial.questionMode);
+  const [settings, setSettings] = useState<Settings>(loadSettings);
+  const { difficulty, soundOn, timerOn, questionMode } = settings;
 
   const [mode, setMode] = useState<Mode>("quiz");
   const [showConfig, setShowConfig] = useState(false);
   const [selectedState, setSelectedState] = useState<StateData | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const [bestAtStart, setBestAtStart] = useState(() => readBest(settings.difficulty));
 
-  const [quiz, dispatch] = useReducer(quizReducer, undefined, () => initQuiz(poolFor(initial.difficulty), initial.questionMode));
+  const [quiz, dispatch] = useReducer(quizReducer, undefined, () =>
+    initQuiz(poolFor(settings.difficulty), settings.questionMode, { distractors: poolFor(settings.difficulty) }),
+  );
 
   const { playSuccess, playWrong } = useGameAudio();
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
-  const [bestAtStart, setBestAtStart] = useState(() => readBest(initial.difficulty));
 
-  const quizStates = useMemo(() => poolFor(difficulty), [difficulty]);
+  const quizStates = poolFor(difficulty);
   const timerSeconds = TIMER_SECONDS[difficulty];
+  const patch = (p: Partial<Settings>) => setSettings((s) => ({ ...s, ...p }));
 
-  // Start a fresh run over `pool` and snapshot the best score to beat.
-  const start = (pool: StateData[], mode: QuestionMode, forBest: Difficulty) => {
+  // Start a fresh run. Randomness lives in initQuiz (the factory), so the reducer just
+  // adopts the pre-built state via RESET and stays pure. `distractors` keeps 4 real
+  // options even when the question pool is tiny (retry-missed).
+  const start = (pool: StateData[], distractors: StateData[], mode: QuestionMode, forBest: Difficulty) => {
     setBestAtStart(readBest(forBest));
-    dispatch({ type: "START", pool, mode });
+    dispatch({ type: "RESET", state: initQuiz(pool, mode, { distractors }) });
   };
 
-  // Persist settings (side effect only - no setState here, so effects stay lint-clean).
-  useEffect(() => {
-    try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ difficulty, soundOn, timerOn, questionMode }));
-    } catch {
-      /* storage unavailable */
-    }
-  }, [difficulty, soundOn, timerOn, questionMode]);
+  // Persist settings (side-effect-only effect).
+  useEffect(() => saveSettings(settings), [settings]);
 
-  // After a reveal, advance to the next question. setTimeout keeps the dispatch out
-  // of the synchronous effect body, and the cleanup cancels it on mode switch/unmount.
+  // After a reveal, advance. setTimeout keeps dispatch out of the sync effect body;
+  // the cleanup cancels it on mode switch / unmount.
   useEffect(() => {
     if (quiz.phase !== "revealing") return;
     const delay = quiz.wrongId ? 2000 : 1500;
@@ -90,22 +60,17 @@ export default function Game() {
     return () => clearTimeout(id);
   }, [quiz.phase, quiz.wrongId]);
 
-  // On finish: celebrate (unless reduced motion) and record a new best.
+  // On finish: celebrate, and record a new best only for a FULL run (not a retry-missed run).
   useEffect(() => {
     if (quiz.phase !== "done") return;
     if (!prefersReducedMotion()) confetti({ particleCount: 200, spread: 160, origin: { x: 0.5, y: 0.3 } });
-    if (quiz.score.correct > bestAtStart) {
-      try {
-        localStorage.setItem(bestKey(difficulty), String(quiz.score.correct));
-      } catch {
-        /* storage unavailable */
-      }
-    }
-  }, [quiz.phase, quiz.score.correct, difficulty, bestAtStart]);
+    const fullRun = quiz.total === poolFor(difficulty).length;
+    if (fullRun && quiz.score.correct > bestAtStart) writeBest(difficulty, quiz.score.correct);
+  }, [quiz.phase, quiz.score.correct, quiz.total, difficulty, bestAtStart]);
 
   const answer = (choice: StateData) => {
     if (quiz.phase !== "asking" || !quiz.current) return;
-    const correct = choice.id === quiz.current.id;
+    const correct = choice.id === quiz.current.state.id;
     if (correct) {
       if (soundOn) playSuccess();
       if (!prefersReducedMotion()) confetti({ particleCount: 80, spread: 60, origin: { x: 0.85, y: 0.5 } });
@@ -121,19 +86,19 @@ export default function Game() {
   };
 
   const changeDifficulty = (d: Difficulty) => {
-    setDifficulty(d);
-    if (mode === "quiz") start(poolFor(d), questionMode, d);
+    patch({ difficulty: d });
+    if (mode === "quiz") start(poolFor(d), poolFor(d), questionMode, d);
   };
 
   const changeQuestionMode = (m: QuestionMode) => {
-    setQuestionMode(m);
-    if (mode === "quiz") start(quizStates, m, difficulty);
+    patch({ questionMode: m });
+    if (mode === "quiz") start(quizStates, quizStates, m, difficulty);
   };
 
   const switchMode = (next: Mode) => {
     setMode(next);
     setSelectedState(null);
-    if (next === "quiz") start(quizStates, questionMode, difficulty);
+    if (next === "quiz") start(quizStates, quizStates, questionMode, difficulty);
   };
 
   const closeSettings = () => {
@@ -143,13 +108,17 @@ export default function Game() {
 
   const onMapActivate = (state: StateData) => {
     if (mode === "study") setSelectedState(state);
-    else if (mode === "quiz" && quiz.quizType === "findIt" && quiz.phase === "asking") answer(state);
+    else if (mode === "quiz" && quiz.current?.quizType === "findIt" && quiz.phase === "asking") answer(state);
   };
 
   const asking = quiz.phase === "asking";
-  const interactive = mode === "study" || (mode === "quiz" && quiz.quizType === "findIt" && asking);
-  const highlightId = mode === "quiz" && quiz.quizType === "nameIt" && asking ? quiz.current?.id ?? null : null;
+  const quizType = quiz.current?.quizType;
+  const interactive = mode === "study" || (mode === "quiz" && quizType === "findIt" && asking);
+  const highlightId = mode === "quiz" && quizType === "nameIt" && asking ? quiz.current?.state.id ?? null : null;
   const revealing = quiz.phase === "revealing";
+  // Hide labels during a nameIt question (so the answer is not spelled out on the map)
+  // and at higher difficulties during a findIt question (challenge); show them on reveal.
+  const showLabels = mode === "study" ? true : !asking || !(quizType === "nameIt" || difficulty >= 3);
 
   return (
     <div className={styles.container}>
@@ -184,7 +153,7 @@ export default function Game() {
       <main className={styles.main}>
         <div className={`${styles.mapLayout} ${selectedState && mode === "study" ? styles.mapLayoutWithPanel : ""}`}>
           <StateMap
-            showLabels={!(mode === "quiz" && difficulty >= 3)}
+            showLabels={showLabels}
             interactive={interactive}
             labelStates={interactive}
             showLegend={mode === "study"}
@@ -212,8 +181,9 @@ export default function Game() {
               total={quiz.total}
               best={bestAtStart}
               missed={quiz.missed}
-              onRetryMissed={() => start(quiz.missed, questionMode, difficulty)}
-              onPlayAgain={() => start(quizStates, questionMode, difficulty)}
+              isFullRun={quiz.total === quizStates.length}
+              onRetryMissed={() => start(quiz.missed, quizStates, questionMode, difficulty)}
+              onPlayAgain={() => start(quizStates, quizStates, questionMode, difficulty)}
               onStudy={() => switchMode("study")}
             />
           )}
@@ -225,9 +195,9 @@ export default function Game() {
           difficulty={difficulty}
           onDifficulty={changeDifficulty}
           soundOn={soundOn}
-          onSound={setSoundOn}
+          onSound={(v) => patch({ soundOn: v })}
           timerOn={timerOn}
-          onTimer={setTimerOn}
+          onTimer={(v) => patch({ timerOn: v })}
           questionMode={questionMode}
           onQuestionMode={changeQuestionMode}
           timerSeconds={timerSeconds}

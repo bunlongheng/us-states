@@ -16,6 +16,7 @@ The dev server runs on port 3032, so open [http://localhost:3032](http://localho
 - `npm run typecheck` must pass
 - `npm run lint` must pass
 - `npm test` must pass
+- `npm run e2e` (Playwright) must pass
 - PRs should target `main`
 - CI must be green before merge
 

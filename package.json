@@ -8,30 +8,31 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.tests.json",
-    "test": "node --experimental-strip-types --test tests/quiz.test.ts tests/quizEngine.test.ts tests/states.test.ts",
+    "test": "node --experimental-strip-types --test tests/quiz.test.ts tests/quizEngine.test.ts tests/states.test.ts tests/settings.test.ts",
     "prepare": "husky || true",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test-coverage-lines=80 --test tests/quiz.test.ts tests/quizEngine.test.ts tests/states.test.ts tests/settings.test.ts"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
     "next": "16.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-simple-maps": "^3.0.0"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/d3-geo": "^3.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/topojson-client": "^3.1.5",
+    "d3-geo": "^3.1.1",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4",
+    "topojson-client": "^3.1.0",
     "typescript": "^5"
-  },
-  "overrides": {
-    "d3-color": "^3.1.0"
   }
 }

@@ -889,12 +889,6 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.legendItemSelected {
-  background: color-mix(in srgb, var(--legend-glow, #888) 20%, transparent);
-  border-color: var(--legend-glow, #888);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--legend-glow, #888) 50%, transparent);
-}
-
 .legendItemSelected .legendLabel {
   color: #fff;
 }
@@ -1297,4 +1291,20 @@
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
   }
+}
+
+/* Plain-SVG map: inert unmatched geography (DC) + hover stroke on interactive states. */
+.statePathInert {
+  fill: #2b3140;
+  stroke: #1a1a2e;
+  stroke-width: 0.5;
+  pointer-events: none;
+}
+.statePath {
+  transition: fill 0.15s;
+  outline: none;
+}
+.statePathInteractive:hover {
+  stroke: #ffffff !important;
+  stroke-width: 1.2 !important;
 }
