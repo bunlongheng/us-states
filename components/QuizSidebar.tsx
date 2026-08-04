@@ -13,12 +13,12 @@ export function QuizSidebar(props: {
   onTimeout: () => void;
 }) {
   const { state, timerOn, timerSeconds, onAnswer, onTimeout } = props;
-  const { current, score, phase, wrongId, revealId, verdict, total } = state;
+  const { current, score, phase, wrongId, revealId, lastCorrect, verdict, total } = state;
   if (!current) return null;
 
   const { state: answer, quizType, options } = current;
   const answering = phase !== "asking";
-  const isCorrectVerdict = !!revealId && !wrongId && (verdict?.startsWith("Correct") ?? false);
+  const isCorrectVerdict = lastCorrect === true;
   const progressPct = total > 0 ? Math.round((score.total / total) * 100) : 0;
   const prompt = quizType === "findIt" ? `Find ${answer.name} on the map` : "What state is highlighted?";
 
@@ -31,8 +31,8 @@ export function QuizSidebar(props: {
 
       <div className={styles.quizHeader}>
         <div className={styles.quizHeaderRow}>
-          <div className={styles.scoreDisplay} data-testid="score">
-            ⭐ {score.correct} / {total}
+          <div className={styles.scoreDisplay} data-testid="score" aria-label={`Score ${score.correct} of ${total}`}>
+            <span aria-hidden="true">⭐</span> {score.correct} / {total}
           </div>
           {timerOn && phase === "asking" && <QuizTimer key={answer.id} seconds={timerSeconds} onTimeout={onTimeout} />}
         </div>

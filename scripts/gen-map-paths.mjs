@@ -8,11 +8,12 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { geoAlbersUsa, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 
-const topo = JSON.parse(readFileSync(new URL("../public/states-10m.json", import.meta.url)));
+const topo = JSON.parse(readFileSync(new URL("./states-10m.json", import.meta.url)));
 const fc = feature(topo, topo.objects.states);
 
 const projection = geoAlbersUsa().translate([400, 300]).scale(900);
-const path = geoPath(projection);
+// 1 decimal is sub-pixel in an 800x600 viewport - drops the file ~65% with no visible change.
+const path = geoPath(projection).digits(1);
 
 const paths = fc.features
   .map((f) => {

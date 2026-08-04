@@ -44,10 +44,12 @@ export function StateMap(props: {
   correctId: string | null;
   selectedId: string | null;
   hoveredId: string | null;
-  hoveredRegion: string | null;
+  activeRegion: string | null; // pinned region, or hovered when nothing is pinned
+  pinnedRegion: string | null;
   onActivate: (state: StateData) => void;
   onHoverState: (id: string | null) => void;
   onHoverRegion: (region: string | null) => void;
+  onPinRegion: (region: string) => void;
   onBackground: () => void;
 }) {
   const {
@@ -60,10 +62,12 @@ export function StateMap(props: {
     correctId,
     selectedId,
     hoveredId,
-    hoveredRegion,
+    activeRegion,
+    pinnedRegion,
     onActivate,
     onHoverState,
     onHoverRegion,
+    onPinRegion,
     onBackground,
   } = props;
 
@@ -84,7 +88,7 @@ export function StateMap(props: {
           const correct = correctId === id;
           const selected = selectedId === id;
           const hovered = hoveredId === id;
-          const regionHovered = !!hoveredRegion && stateData.region === hoveredRegion;
+          const regionHovered = !!activeRegion && stateData.region === activeRegion;
           const fill = fillFor(stateData.region, { highlight, wrong, correct, selected, hovered, regionHovered });
           const stroke = selected || regionHovered ? "#ffffff" : "#1a1a2e";
           const strokeWidth = selected ? 2.5 : regionHovered ? 1.5 : 0.5;
@@ -137,15 +141,15 @@ export function StateMap(props: {
             <button
               key={region}
               type="button"
-              className={`${styles.legendItem} ${hoveredRegion === region ? styles.legendItemActive : ""}`}
-              aria-pressed={hoveredRegion === region}
+              className={`${styles.legendItem} ${activeRegion === region ? styles.legendItemActive : ""}`}
+              aria-pressed={pinnedRegion === region}
               onMouseEnter={() => onHoverRegion(region)}
               onMouseLeave={() => onHoverRegion(null)}
               onFocus={() => onHoverRegion(region)}
               onBlur={() => onHoverRegion(null)}
               onClick={(e) => {
                 e.stopPropagation();
-                onHoverRegion(hoveredRegion === region ? null : region);
+                onPinRegion(region);
               }}
             >
               <span className={styles.legendDot} style={{ background: REGION_COLORS[region] }} aria-hidden="true" />

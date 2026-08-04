@@ -27,6 +27,7 @@ export default function Game() {
   const [selectedState, setSelectedState] = useState<StateData | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const [pinnedRegion, setPinnedRegion] = useState<string | null>(null);
   const [bestAtStart, setBestAtStart] = useState(() => readBest(settings.difficulty));
 
   const [quiz, dispatch] = useReducer(quizReducer, undefined, () =>
@@ -98,6 +99,8 @@ export default function Game() {
   const switchMode = (next: Mode) => {
     setMode(next);
     setSelectedState(null);
+    setPinnedRegion(null);
+    setHoveredRegion(null);
     if (next === "quiz") start(quizStates, quizStates, questionMode, difficulty);
   };
 
@@ -131,14 +134,14 @@ export default function Game() {
               aria-pressed={mode === "study"}
               onClick={() => switchMode("study")}
             >
-              📖 Study
+              <span aria-hidden="true">📖</span> Study
             </button>
             <button
               className={`${styles.modeBtn} ${mode === "quiz" ? styles.modeBtnActive : ""}`}
               aria-pressed={mode === "quiz"}
               onClick={() => switchMode("quiz")}
             >
-              🎯 Quiz
+              <span aria-hidden="true">🎯</span> Quiz
             </button>
           </div>
           <button className={styles.configBtn} ref={settingsBtnRef} onClick={() => setShowConfig(true)}>
@@ -162,10 +165,12 @@ export default function Game() {
             correctId={revealing ? quiz.revealId : null}
             selectedId={mode === "study" ? selectedState?.id ?? null : null}
             hoveredId={hoveredState}
-            hoveredRegion={hoveredRegion}
+            activeRegion={pinnedRegion ?? hoveredRegion}
+            pinnedRegion={pinnedRegion}
             onActivate={onMapActivate}
             onHoverState={setHoveredState}
             onHoverRegion={setHoveredRegion}
+            onPinRegion={(r) => setPinnedRegion((p) => (p === r ? null : r))}
             onBackground={() => mode === "study" && setSelectedState(null)}
           />
 

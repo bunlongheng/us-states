@@ -25,6 +25,7 @@ export interface QuizState {
   phase: Phase;
   wrongId: string | null;
   revealId: string | null; // the correct state, highlighted during "revealing"
+  lastCorrect: boolean | null; // was the last answer correct - drives verdict styling (not the copy)
   missed: StateData[];
   verdict: string | null; // human text for the aria-live region + sidebar
   total: number; // questions in this run
@@ -61,6 +62,7 @@ export function initQuiz(pool: StateData[], mode: QuestionMode, opts: InitOption
     phase: questions.length > 0 ? "asking" : "done",
     wrongId: null,
     revealId: null,
+    lastCorrect: null,
     missed: [],
     verdict: null,
     total: pool.length,
@@ -84,6 +86,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
           score: { correct: nextCorrect, total: state.score.total + 1 },
           wrongId: null,
           revealId: answer.id,
+          lastCorrect: true,
           verdict: `Correct! ${nextCorrect} of ${state.total}`,
         };
       }
@@ -93,6 +96,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         score: { ...state.score, total: state.score.total + 1 },
         wrongId: action.choice.id,
         revealId: answer.id, // reveal the real answer so the user learns it
+        lastCorrect: false,
         missed: [...state.missed, answer],
         verdict: `Not quite - that was ${answer.name}`,
       };
@@ -107,6 +111,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         score: { ...state.score, total: state.score.total + 1 },
         wrongId: null,
         revealId: answer.id,
+        lastCorrect: false,
         missed: [...state.missed, answer],
         verdict: `Time's up - that was ${answer.name}`,
       };
@@ -122,6 +127,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         phase: next ? "asking" : "done",
         wrongId: null,
         revealId: null,
+        lastCorrect: null,
         verdict: null,
       };
     }
