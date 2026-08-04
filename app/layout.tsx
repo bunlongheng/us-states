@@ -36,10 +36,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        {/* Start the map geometry download in parallel with the app chunk. */}
-        <link rel="preload" href="/states-10m.json" as="fetch" crossOrigin="anonymous" />
-      </head>
       <body>{children}</body>
     </html>
   );

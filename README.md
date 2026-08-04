@@ -73,6 +73,7 @@ Open [http://localhost:3032](http://localhost:3032).
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm test` | Unit tests for the quiz logic (`node:test`) |
+| `npm run e2e` | Playwright end-to-end tests (builds + serves on port 3032) |
 
 ## Design decisions
 

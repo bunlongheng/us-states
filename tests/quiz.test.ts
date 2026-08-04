@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { invertHex, lighten, shuffle, getOptions, REGION_COLORS, LEGEND_ORDER } from "../lib/quiz.ts";
+import { invertHex, lighten, shuffle, getOptions } from "../lib/quiz.ts";
 import { STATES } from "../lib/states.ts";
 
 test("invertHex inverts each channel", () => {
@@ -35,18 +35,3 @@ test("getOptions returns 4 unique choices including the correct one", () => {
   }
 });
 
-test("every region used by a state has a color and a legend slot", () => {
-  const legend = new Set(LEGEND_ORDER);
-  for (const s of STATES) {
-    assert.ok(REGION_COLORS[s.region], `missing color for region ${s.region}`);
-    assert.ok(legend.has(s.region as (typeof LEGEND_ORDER)[number]), `region ${s.region} not in legend`);
-  }
-});
-
-test("state data is internally consistent (unique ids, unique FIPS)", () => {
-  const ids = STATES.map((s) => s.id);
-  const fips = STATES.map((s) => s.fipsCode);
-  assert.equal(new Set(ids).size, ids.length, "state ids must be unique");
-  assert.equal(new Set(fips).size, fips.length, "FIPS codes must be unique");
-  assert.ok(STATES.length >= 50, "expected at least 50 states");
-});

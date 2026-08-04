@@ -1,14 +1,12 @@
 "use client";
 
 import React from "react";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { STATES, type StateData } from "@/lib/states";
+import { STATE_PATHS, MAP_VIEWBOX } from "@/lib/mapPaths";
 import { REGION_COLORS, LEGEND_ORDER, lighten } from "@/lib/quiz";
 import styles from "@/app/states.module.css";
 
-const GEO_URL = "/states-10m.json";
-
-// Never label these tiny states on the map (too cluttered).
+// Tiny states whose abbreviation label would clutter the map.
 const SKIP_LABEL = new Set([
   "rhode-island",
   "delaware",
@@ -71,99 +69,67 @@ export function StateMap(props: {
 
   return (
     <div className={styles.mapContainer} onClick={onBackground}>
-      <ComposableMap projection="geoAlbersUsa" className={styles.map} projectionConfig={{ scale: 900 }}>
-        <Geographies geography={GEO_URL}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
-              const fips = String(geo.id).padStart(2, "0");
-              const stateData = stateByFips[fips];
+      <svg viewBox={MAP_VIEWBOX} className={styles.map} role="group" aria-label="Map of the United States">
+        {STATE_PATHS.map((sp) => {
+          const stateData = stateByFips[sp.fips];
 
-              // Unmatched geography (e.g. DC): render inert and hidden from AT.
-              if (!stateData) {
-                return (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    tabIndex={-1}
-                    aria-label="Not part of the 50 states"
-                    className={styles.statePath}
-                    style={{
-                      default: { fill: "#2b3140", stroke: "#1a1a2e", strokeWidth: 0.5, cursor: "default", pointerEvents: "none" },
-                      hover: { fill: "#2b3140", stroke: "#1a1a2e", strokeWidth: 0.5 },
-                      pressed: { fill: "#2b3140" },
-                    }}
-                  />
-                );
-              }
-
-              const id = stateData.id;
-              const highlight = highlightId === id;
-              const wrong = wrongId === id;
-              const correct = correctId === id;
-              const selected = selectedId === id;
-              const hovered = hoveredId === id;
-              const regionHovered = !!hoveredRegion && stateData.region === hoveredRegion;
-              const fill = fillFor(stateData.region, { highlight, wrong, correct, selected, hovered, regionHovered });
-              const stroke = selected || regionHovered ? "#ffffff" : "#1a1a2e";
-              const strokeWidth = selected ? 2.5 : regionHovered ? 1.5 : 0.5;
-
-              const activate = () => interactive && onActivate(stateData);
-
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  tabIndex={labelStates ? 0 : -1}
-                  role={labelStates ? "button" : undefined}
-                  aria-label={labelStates ? stateData.name : undefined}
-                  aria-hidden={labelStates ? undefined : true}
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    activate();
-                  }}
-                  onKeyDown={(e: React.KeyboardEvent) => {
-                    if (labelStates && (e.key === "Enter" || e.key === " ")) {
-                      e.preventDefault();
-                      activate();
-                    }
-                  }}
-                  onMouseEnter={() => onHoverState(id)}
-                  onMouseLeave={() => onHoverState(null)}
-                  onFocus={() => onHoverState(id)}
-                  onBlur={() => onHoverState(null)}
-                  className={[
-                    styles.statePath,
-                    labelStates ? styles.statePathInteractive : "",
-                    highlight ? styles.quizHighlight : "",
-                    wrong ? styles.wrongAnswer : "",
-                    correct ? styles.correctAnswer : "",
-                    selected ? styles.selected : "",
-                    regionHovered ? styles.regionHovered : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  style={{
-                    default: { fill, stroke, strokeWidth, cursor: interactive ? "pointer" : "default", transition: "fill 0.15s" },
-                    hover: { fill, stroke: "#ffffff", strokeWidth: 1.2, cursor: interactive ? "pointer" : "default" },
-                    pressed: { fill },
-                  }}
-                />
-              );
-            })
+          // Unmatched geography (e.g. DC): inert and hidden from assistive tech.
+          if (!stateData) {
+            return <path key={sp.fips} d={sp.d} className={styles.statePathInert} aria-hidden="true" />;
           }
-        </Geographies>
+
+          const id = stateData.id;
+          const highlight = highlightId === id;
+          const wrong = wrongId === id;
+          const correct = correctId === id;
+          const selected = selectedId === id;
+          const hovered = hoveredId === id;
+          const regionHovered = !!hoveredRegion && stateData.region === hoveredRegion;
+          const fill = fillFor(stateData.region, { highlight, wrong, correct, selected, hovered, regionHovered });
+          const stroke = selected || regionHovered ? "#ffffff" : "#1a1a2e";
+          const strokeWidth = selected ? 2.5 : regionHovered ? 1.5 : 0.5;
+          const activate = () => interactive && onActivate(stateData);
+
+          return (
+            <path
+              key={sp.fips}
+              d={sp.d}
+              data-id={id}
+              tabIndex={labelStates ? 0 : -1}
+              role={labelStates ? "button" : undefined}
+              aria-label={labelStates ? stateData.name : undefined}
+              aria-hidden={labelStates ? undefined : true}
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                activate();
+              }}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (labelStates && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  activate();
+                }
+              }}
+              onMouseEnter={() => onHoverState(id)}
+              onMouseLeave={() => onHoverState(null)}
+              onFocus={() => onHoverState(id)}
+              onBlur={() => onHoverState(null)}
+              className={[styles.statePath, labelStates ? styles.statePathInteractive : ""].filter(Boolean).join(" ")}
+              style={{ fill, stroke, strokeWidth, cursor: interactive ? "pointer" : "default" }}
+            />
+          );
+        })}
 
         {showLabels &&
-          STATES.map((state) =>
-            SKIP_LABEL.has(state.id) ? null : (
-              <Marker key={state.id} coordinates={[state.centerLon, state.centerLat]}>
-                <text textAnchor="middle" dominantBaseline="central" className={styles.stateLabel} style={{ pointerEvents: "none" }} aria-hidden="true">
-                  {state.abbreviation}
-                </text>
-              </Marker>
-            ),
-          )}
-      </ComposableMap>
+          STATE_PATHS.map((sp) => {
+            const stateData = stateByFips[sp.fips];
+            if (!stateData || SKIP_LABEL.has(stateData.id)) return null;
+            return (
+              <text key={`l-${sp.fips}`} x={sp.cx} y={sp.cy} className={styles.stateLabel} aria-hidden="true">
+                {stateData.abbreviation}
+              </text>
+            );
+          })}
+      </svg>
 
       {showLegend && (
         <div className={styles.legendOverlay} role="group" aria-label="Region legend">
@@ -177,7 +143,10 @@ export function StateMap(props: {
               onMouseLeave={() => onHoverRegion(null)}
               onFocus={() => onHoverRegion(region)}
               onBlur={() => onHoverRegion(null)}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onHoverRegion(hoveredRegion === region ? null : region);
+              }}
             >
               <span className={styles.legendDot} style={{ background: REGION_COLORS[region] }} aria-hidden="true" />
               <span className={styles.legendLabel}>{region}</span>

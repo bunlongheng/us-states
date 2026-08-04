@@ -51,11 +51,6 @@ const nextConfig: NextConfig = {
         source: "/",
         headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
       },
-      {
-        // The US geometry never changes - cache it hard (rename the file if it ever does).
-        source: "/states-10m.json",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-      },
     ];
   },
 };

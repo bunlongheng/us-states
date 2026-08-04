@@ -41,17 +41,22 @@ export function lighten(hex: string, amount = 40): string {
   return `rgb(${r},${g},${b})`;
 }
 
-export function shuffle<T>(arr: T[]): T[] {
+// Fisher-Yates shuffle. Accepts an injectable rng (default Math.random) so callers
+// like the quiz factory can be made deterministic in tests.
+export function shuffle<T>(arr: T[], rng: () => number = Math.random): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
 
-// One correct state plus 3 distinct wrong ones, shuffled.
-export function getOptions(correct: StateData, all: StateData[]): StateData[] {
-  const wrong = shuffle(all.filter((s) => s.id !== correct.id)).slice(0, 3);
-  return shuffle([correct, ...wrong]);
+// One correct state plus up to 3 distinct wrong ones drawn from `all`, shuffled.
+export function getOptions(correct: StateData, all: StateData[], rng: () => number = Math.random): StateData[] {
+  const wrong = shuffle(
+    all.filter((s) => s.id !== correct.id),
+    rng,
+  ).slice(0, 3);
+  return shuffle([correct, ...wrong], rng);
 }

@@ -13,12 +13,14 @@ export function QuizSidebar(props: {
   onTimeout: () => void;
 }) {
   const { state, timerOn, timerSeconds, onAnswer, onTimeout } = props;
-  const { current, quizType, options, score, phase, wrongId, revealId, verdict, total } = state;
+  const { current, score, phase, wrongId, revealId, verdict, total } = state;
   if (!current) return null;
 
+  const { state: answer, quizType, options } = current;
   const answering = phase !== "asking";
+  const isCorrectVerdict = !!revealId && !wrongId && (verdict?.startsWith("Correct") ?? false);
   const progressPct = total > 0 ? Math.round((score.total / total) * 100) : 0;
-  const prompt = quizType === "findIt" ? `Find ${current.name} on the map` : "What state is highlighted?";
+  const prompt = quizType === "findIt" ? `Find ${answer.name} on the map` : "What state is highlighted?";
 
   return (
     <div className={styles.quizSidebar}>
@@ -32,9 +34,7 @@ export function QuizSidebar(props: {
           <div className={styles.scoreDisplay} data-testid="score">
             ⭐ {score.correct} / {total}
           </div>
-          {timerOn && phase === "asking" && (
-            <QuizTimer key={current.id} seconds={timerSeconds} onTimeout={onTimeout} />
-          )}
+          {timerOn && phase === "asking" && <QuizTimer key={answer.id} seconds={timerSeconds} onTimeout={onTimeout} />}
         </div>
         <div className={styles.progressBar}>
           <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
@@ -42,10 +42,10 @@ export function QuizSidebar(props: {
         <div className={styles.progressLabel}>{score.total} answered</div>
       </div>
 
-      <div className={styles.quizQuestion} data-testid="question">
+      <div className={styles.quizQuestion} data-testid="question" data-state-id={quizType === "findIt" ? answer.id : undefined}>
         {quizType === "findIt" ? (
           <span>
-            🗺️ Find <strong>{current.name}</strong> on the map!
+            🗺️ Find <strong>{answer.name}</strong> on the map!
           </span>
         ) : (
           <span>❓ What state is highlighted?</span>
@@ -54,13 +54,7 @@ export function QuizSidebar(props: {
 
       {/* Visible text verdict so results are never color-and-sound only. */}
       {verdict && (
-        <div
-          className={`${styles.quizVerdict} ${wrongId || !revealId ? "" : ""} ${
-            revealId && !wrongId && verdict.startsWith("Correct") ? styles.quizVerdictGood : styles.quizVerdictBad
-          }`}
-        >
-          {verdict}
-        </div>
+        <div className={`${styles.quizVerdict} ${isCorrectVerdict ? styles.quizVerdictGood : styles.quizVerdictBad}`}>{verdict}</div>
       )}
 
       {quizType === "nameIt" ? (

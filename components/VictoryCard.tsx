@@ -8,12 +8,13 @@ export function VictoryCard(props: {
   total: number;
   best: number;
   missed: StateData[];
+  isFullRun: boolean;
   onRetryMissed: () => void;
   onPlayAgain: () => void;
   onStudy: () => void;
 }) {
-  const { correct, total, best, missed, onRetryMissed, onPlayAgain, onStudy } = props;
-  const isNewBest = correct > best;
+  const { correct, total, best, missed, isFullRun, onRetryMissed, onPlayAgain, onStudy } = props;
+  const isNewBest = isFullRun && correct > best;
   const praise =
     correct === total
       ? "Perfect score! 🏆"
@@ -30,12 +31,14 @@ export function VictoryCard(props: {
           🎉
         </div>
         <h2 className={styles.victoryTitle}>AMAZING!</h2>
-        <p className={styles.victorySubtitle}>You finished all {total} states!</p>
+        <p className={styles.victorySubtitle}>
+          {isFullRun ? `You finished all ${total} states!` : `You cleared your ${total} missed states!`}
+        </p>
         <div className={styles.finalScore}>
           <span className={styles.finalScoreNum}>{correct}</span>
           <span className={styles.finalScoreDen}> / {total}</span>
           <p className={styles.finalScoreLabel}>{praise}</p>
-          <p className={styles.bestScore}>{isNewBest ? "🥇 New best!" : `Best: ${best} / ${total}`}</p>
+          {isFullRun && <p className={styles.bestScore}>{isNewBest ? "🥇 New best!" : `Best: ${best} / ${total}`}</p>}
         </div>
 
         {missed.length > 0 && (
