@@ -124,7 +124,7 @@ export default function Game() {
   const onMapActivate = (state: StateData) => {
     if (mode === "study") {
       setSelectedState(state);
-      if (soundOn) speak(state.name); // say the state name on click
+      speak(state.name); // say the state name on click (like the Pronounce button, not gated by the sound toggle)
     } else if (mode === "quiz" && quiz.current?.quizType === "findIt" && quiz.phase === "asking") {
       answer(state);
     }
