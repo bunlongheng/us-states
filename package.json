@@ -2,11 +2,15 @@
   "name": "us-states",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "dev": "next dev -p 3032",
+    "dev": "next dev -p 3024",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "gen:map": "node scripts/gen-map-paths.mjs",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.tests.json",
     "test": "node --experimental-strip-types --test tests/quiz.test.ts tests/quizEngine.test.ts tests/states.test.ts tests/settings.test.ts",
     "prepare": "husky || true",
@@ -24,7 +28,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/d3-geo": "^3.1.1",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/topojson-client": "^3.1.5",

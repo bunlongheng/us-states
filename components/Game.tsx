@@ -4,7 +4,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { STATES, type StateData } from "@/lib/states";
 import { quizReducer, initQuiz, type QuestionMode } from "@/lib/quizEngine";
-import { loadSettings, saveSettings, readBest, writeBest, type Difficulty, type Settings } from "@/lib/settings";
+import { loadSettings, saveSettings, readBest, writeBest, isNewBest, type Difficulty, type Settings } from "@/lib/settings";
 import { useGameAudio, prefersReducedMotion } from "@/lib/useGameAudio";
 import { StateMap } from "./StateMap";
 import { StudyPanel } from "./StudyPanel";
@@ -52,6 +52,18 @@ export default function Game() {
   // Persist settings (side-effect-only effect).
   useEffect(() => saveSettings(settings), [settings]);
 
+  // Escape closes the study detail panel (the settings modal handles its own Escape).
+  useEffect(() => {
+    if (showConfig || (!selectedState && !pinnedRegion)) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setSelectedState(null);
+      setPinnedRegion(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showConfig, selectedState, pinnedRegion]);
+
   // After a reveal, advance. setTimeout keeps dispatch out of the sync effect body;
   // the cleanup cancels it on mode switch / unmount.
   useEffect(() => {
@@ -66,7 +78,7 @@ export default function Game() {
     if (quiz.phase !== "done") return;
     if (!prefersReducedMotion()) confetti({ particleCount: 200, spread: 160, origin: { x: 0.5, y: 0.3 } });
     const fullRun = quiz.total === poolFor(difficulty).length;
-    if (fullRun && quiz.score.correct > bestAtStart) writeBest(difficulty, quiz.score.correct);
+    if (isNewBest(fullRun, quiz.score.correct, bestAtStart)) writeBest(difficulty, quiz.score.correct);
   }, [quiz.phase, quiz.score.correct, quiz.total, difficulty, bestAtStart]);
 
   const answer = (choice: StateData) => {
@@ -144,7 +156,13 @@ export default function Game() {
               <span aria-hidden="true">🎯</span> Quiz
             </button>
           </div>
-          <button className={styles.configBtn} ref={settingsBtnRef} onClick={() => setShowConfig(true)}>
+          <button
+            className={styles.configBtn}
+            ref={settingsBtnRef}
+            onClick={() => setShowConfig(true)}
+            aria-haspopup="dialog"
+            aria-expanded={showConfig}
+          >
             <span className={styles.configIcon} aria-hidden="true">
               ⚙
             </span>{" "}

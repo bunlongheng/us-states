@@ -45,10 +45,12 @@ export function QuizSidebar(props: {
       <div className={styles.quizQuestion} data-testid="question" data-state-id={quizType === "findIt" ? answer.id : undefined}>
         {quizType === "findIt" ? (
           <span>
-            🗺️ Find <strong>{answer.name}</strong> on the map!
+            <span aria-hidden="true">🗺️</span> Find <strong>{answer.name}</strong> on the map!
           </span>
         ) : (
-          <span>❓ What state is highlighted?</span>
+          <span>
+            <span aria-hidden="true">❓</span> What state is highlighted?
+          </span>
         )}
       </div>
 
@@ -75,7 +77,9 @@ export function QuizSidebar(props: {
         </div>
       ) : (
         <div className={styles.findItHint}>
-          <span>👆 Click the state on the map</span>
+          <span>
+            <span aria-hidden="true">👆</span> Click the state on the map
+          </span>
         </div>
       )}
     </div>

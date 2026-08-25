@@ -60,3 +60,9 @@ export function writeBest(d: Difficulty, score: number): void {
     /* storage unavailable */
   }
 }
+
+// A new best is only recorded on a FULL run (never a retry-missed run) that beats the
+// stored best. Single source of truth so Game and VictoryCard cannot drift apart.
+export function isNewBest(isFullRun: boolean, correct: number, best: number): boolean {
+  return isFullRun && correct > best;
+}

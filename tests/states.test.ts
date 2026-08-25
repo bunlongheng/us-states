@@ -2,9 +2,22 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { STATES } from "../lib/states.ts";
 import { LEGEND_ORDER, REGION_COLORS } from "../lib/quiz.ts";
+import { STATE_PATHS } from "../lib/mapPaths.ts";
 
 test("the dataset holds exactly 50 states", () => {
   assert.equal(STATES.length, 50);
+});
+
+test("every state has a matching precomputed map path (no orphans)", () => {
+  const pathFips = new Set(STATE_PATHS.map((p) => p.fips));
+  for (const s of STATES) {
+    assert.ok(pathFips.has(s.fipsCode), `missing map path for ${s.name} (FIPS ${s.fipsCode})`);
+  }
+  // Every path carries real geometry and a centroid so the map + labels render.
+  for (const p of STATE_PATHS) {
+    assert.ok(p.d.length > 0, `empty path data for FIPS ${p.fips}`);
+    assert.ok(Number.isFinite(p.cx) && Number.isFinite(p.cy), `bad centroid for FIPS ${p.fips}`);
+  }
 });
 
 test("ids and FIPS codes are unique and FIPS is 2-char zero-padded", () => {

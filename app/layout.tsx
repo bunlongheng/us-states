@@ -17,19 +17,31 @@ export const metadata: Metadata = {
   title,
   description,
   applicationName: title,
+  manifest: "/manifest.webmanifest",
+  alternates: { canonical: url },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  appleWebApp: {
+    capable: true,
+    title,
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title,
     description,
     url,
     siteName: title,
     type: "website",
-    images: [{ url: "/icon.png", width: 512, height: 512, alt: "US States app icon" }],
+    // og:image is injected automatically from app/opengraph-image.tsx
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
-    images: ["/icon.png"],
+    // twitter:image is injected automatically from app/twitter-image.tsx
   },
 };
 

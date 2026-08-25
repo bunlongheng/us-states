@@ -4,6 +4,6 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["tests/**/*.ts", "lib/**/*.ts", "types/**/*.ts"],
+  "include": ["tests/**/*.ts", "lib/**/*.ts"],
   "exclude": ["node_modules"]
 }

@@ -387,10 +387,6 @@
   min-height: 0;
 }
 
-.mapLayoutWithPanel {
-  /* side by side always */
-}
-
 /* ============================================================
    MAP CONTAINER
    ============================================================ */
@@ -1050,11 +1046,6 @@
     border-radius: 10px;
   }
 
-  .legend {
-    gap: 3px 8px;
-    padding: 5px 8px;
-  }
-
   .legendLabel {
     font-size: 0.6rem;
   }
@@ -1110,7 +1101,7 @@
   .optionBtn {
     font-size: 0.8rem;
     padding: 9px 8px;
-    min-height: 40px;
+    min-height: 44px;
   }
 
   .infoGrid {
