@@ -4,6 +4,8 @@ Thanks for taking a look at US States. Contributions of all sizes are welcome.
 
 ## Getting started
 
+Requires Node 22+ (`npm test` runs TypeScript via `--experimental-strip-types`).
+
 ```bash
 npm install
 npm run dev

@@ -60,6 +60,8 @@ The game is a set of client components (`components/Game.tsx` plus 6 siblings) l
 
 ## Getting started
 
+Requires **Node 22+** (the unit tests run TypeScript directly via `--experimental-strip-types`).
+
 ```bash
 npm install
 npm run dev

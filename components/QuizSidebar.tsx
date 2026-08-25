@@ -20,7 +20,12 @@ export function QuizSidebar(props: {
   const answering = phase !== "asking";
   const isCorrectVerdict = lastCorrect === true;
   const progressPct = total > 0 ? Math.round((score.total / total) * 100) : 0;
-  const prompt = quizType === "findIt" ? `Find ${answer.name} on the map` : "What state is highlighted?";
+  // For nameIt the map highlight is purely visual, so give assistive tech a non-visual
+  // narrowing hint (the region, never the answer itself).
+  const prompt =
+    quizType === "findIt"
+      ? `Find ${answer.name} on the map`
+      : `What state is highlighted? It is in the ${answer.region} region.`;
 
   return (
     <div className={styles.quizSidebar}>
