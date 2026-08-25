@@ -5,7 +5,7 @@ import confetti from "canvas-confetti";
 import { STATES, type StateData } from "@/lib/states";
 import { quizReducer, initQuiz, type QuestionMode } from "@/lib/quizEngine";
 import { loadSettings, saveSettings, readBest, writeBest, isNewBest, type Difficulty, type Settings } from "@/lib/settings";
-import { useGameAudio, prefersReducedMotion } from "@/lib/useGameAudio";
+import { useGameAudio, prefersReducedMotion, speak } from "@/lib/useGameAudio";
 import { StateMap } from "./StateMap";
 import { StudyPanel } from "./StudyPanel";
 import { QuizSidebar } from "./QuizSidebar";
@@ -122,8 +122,12 @@ export default function Game() {
   };
 
   const onMapActivate = (state: StateData) => {
-    if (mode === "study") setSelectedState(state);
-    else if (mode === "quiz" && quiz.current?.quizType === "findIt" && quiz.phase === "asking") answer(state);
+    if (mode === "study") {
+      setSelectedState(state);
+      if (soundOn) speak(state.name); // say the state name on click
+    } else if (mode === "quiz" && quiz.current?.quizType === "findIt" && quiz.phase === "asking") {
+      answer(state);
+    }
   };
 
   const asking = quiz.phase === "asking";
