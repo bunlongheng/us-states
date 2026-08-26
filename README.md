@@ -1,4 +1,14 @@
 <div align="center">
+  <img src="docs/icon.png" alt="States" width="96" height="96" />
+  <h1>States</h1>
+  <p><em>Interactive US map to study and quiz yourself on all 50 states</em></p>
+  <p><a href="https://github.com/bunlongheng/us-states">Repo</a> &middot; <a href="https://bunlongheng.com/projects?name=states">Portfolio</a></p>
+  <img src="docs/social-preview.png" alt="States - preview" width="820" />
+</div>
+
+---
+
+<div align="center">
 
 # US States
 
