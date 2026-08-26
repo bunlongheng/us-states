@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import SwRegister from "./sw-register";
 
 const title = "US States";
 const description =
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
   title,
   description,
   applicationName: title,
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title,
     description,
@@ -36,7 +38,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <SwRegister />
+      </body>
     </html>
   );
 }
