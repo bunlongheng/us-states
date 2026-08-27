@@ -31,50 +31,50 @@ export function StudyPanel({ state, onClose }: { state: StateData | null; onClos
           <h2 className={styles.stateNameLarge}>{state.name}</h2>
           <p className={styles.statePronunciation}>{state.pronunciation}</p>
           <button className={styles.speakBtn} onClick={() => speak(`${state.name}. ${state.pronunciation}`)}>
-            🔊 Pronounce
+            <span aria-hidden="true">🔊</span> Pronounce
           </button>
 
           <div className={styles.infoGrid}>
             <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>🏛️ Capital</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">🏛️</span> Capital</span>
               <span className={styles.infoValue}>
                 {state.capital}
                 <span className={styles.infoPop}> ({state.capitalPop})</span>
               </span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>📅 Union</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">📅</span> Union</span>
               <span className={styles.infoValue}>
                 #{state.unionOrder} - {state.unionDate}
               </span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>🗺️ Region</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">🗺️</span> Region</span>
               <span className={styles.infoValue}>{state.region}</span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>📐 Area</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">📐</span> Area</span>
               <span className={styles.infoValue}>{state.areaSqMiles}</span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>🐦 State Bird</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">🐦</span> State Bird</span>
               <span className={styles.infoValue}>{state.stateBird}</span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>🌸 State Flower</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">🌸</span> State Flower</span>
               <span className={styles.infoValue}>{state.stateFlower}</span>
             </div>
             <div className={`${styles.infoItem} ${styles.infoItemFull}`}>
-              <span className={styles.infoLabel}>📜 Motto</span>
+              <span className={styles.infoLabel}><span aria-hidden="true">📜</span> Motto</span>
               <span className={styles.infoValue}>{state.stateMotto}</span>
             </div>
           </div>
 
           <div className={styles.funFacts}>
-            <h3 className={styles.funFactsTitle}>🌟 Fun Facts</h3>
+            <h3 className={styles.funFactsTitle}><span aria-hidden="true">🌟</span> Fun Facts</h3>
             {state.funFacts.map((fact, i) => (
               <p key={i} className={styles.funFact}>
-                ⭐ {fact}
+                <span aria-hidden="true">⭐</span> {fact}
               </p>
             ))}
           </div>

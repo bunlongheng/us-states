@@ -1,2 +1,3 @@
 #!/usr/bin/env sh
-npm run typecheck
+# Mirror CI's fast gates locally (typecheck + lint + unit tests). E2E stays in CI.
+npm run typecheck && npm run lint && npm test

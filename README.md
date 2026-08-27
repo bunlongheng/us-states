@@ -46,7 +46,7 @@ Study every state's capital, region, bird, flower, motto, and fun facts, then te
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict) |
 | Styling | CSS Modules (Tailwind 4 base via PostCSS) |
-| Map | [react-simple-maps](https://www.react-simple-maps.io/) + self-hosted [us-atlas](https://github.com/topojson/us-atlas) topojson |
+| Map | Precomputed static SVG paths, built at build time from [us-atlas](https://github.com/topojson/us-atlas) topojson via [d3-geo](https://github.com/d3/d3-geo) - no map library in the client bundle |
 | Effects | canvas-confetti, Web Audio, Web Speech |
 | Tests | `node:test` (pure quiz logic) |
 | Hosting | Vercel |
@@ -55,30 +55,35 @@ Study every state's capital, region, bird, flower, motto, and fun facts, then te
 
 ```mermaid
 flowchart LR
-  A[Browser] -->|static HTML/JS| B[Next.js App Router]
-  B --> C["app/page.tsx<br/>(client game)"]
-  C -->|"reads"| D["lib/states.ts<br/>50-state dataset"]
-  C -->|"pure logic"| E["lib/quiz.ts<br/>options / colors"]
-  C -->|"fetch /states-10m.json"| F["public topojson<br/>(self-hosted)"]
-  C -->|"geoAlbersUsa"| G[react-simple-maps]
+  subgraph build["Build time"]
+    T["scripts/states-10m.json<br/>(us-atlas topojson)"] -->|"d3-geo + topojson-client<br/>scripts/gen-map-paths.mjs"| M["lib/mapPaths.ts<br/>static SVG paths"]
+  end
+  subgraph run["Runtime (client)"]
+    P["app/page.tsx<br/>(client-only entry)"] -->|"dynamic import"| C["components/Game.tsx<br/>+ 6 UI components"]
+    C -->|"reads"| D["lib/states.ts<br/>50-state dataset"]
+    C -->|"pure logic"| E["lib/quiz.ts<br/>options / colors"]
+    C -->|"renders as plain SVG"| M
+  end
 ```
 
-The whole game is a single client component. The US map geometry is served from `public/states-10m.json` rather than a CDN, so the app makes **no external network calls** and its Content-Security-Policy stays locked to `'self'`.
+The game is a set of client components (`components/Game.tsx` plus 6 siblings) loaded through one dynamic, client-only entry (`app/page.tsx`). The US map geometry is precomputed into `lib/mapPaths.ts` at build time and bundled, so the map renders as plain SVG with **no map library and no runtime data fetch** - the app makes **no external network calls** and its Content-Security-Policy stays locked to `'self'`.
 
 ## Getting started
+
+Requires **Node 22+** (the unit tests run TypeScript directly via `--experimental-strip-types`).
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3032](http://localhost:3032).
+Open [http://localhost:3024](http://localhost:3024).
 
 ## Scripts
 
 | Script | Does |
 |--------|------|
-| `npm run dev` | Dev server on port 3032 |
+| `npm run dev` | Dev server on port 3024 |
 | `npm run build` | Production build |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
@@ -89,9 +94,9 @@ Open [http://localhost:3032](http://localhost:3032).
 
 | Decision | Why |
 |----------|-----|
-| Self-host the topojson in `public/` | No CDN dependency, no external calls, CSP stays `'self'`, works offline |
-| `legacy-peer-deps` in `.npmrc` | `react-simple-maps@3` declares React 16-18 peers; this app runs React 19 |
-| Render the map only after mount | Avoids a benign react-simple-maps SSR hydration mismatch on projected marker coordinates |
+| Precompute the map to static SVG paths (`lib/mapPaths.ts`) | Drops react-simple-maps and d3 from the client bundle (~80KB of JS plus the projection work); the map renders as plain SVG |
+| Keep the source topojson in `scripts/`, generate at build time | Paths are built from a local `us-atlas` file via `gen-map-paths.mjs`, so the app makes no external calls and its CSP stays `'self'` |
+| Load the game client-only (`ssr: false`) | It reads persisted settings from `localStorage` on init and uses canvas / Web Audio, so it renders only after mount |
 | Pure logic in `lib/quiz.ts` | Keeps the quiz math (options, color transforms) unit-testable without a DOM |
 
 ## License

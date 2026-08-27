@@ -20,7 +20,12 @@ export function QuizSidebar(props: {
   const answering = phase !== "asking";
   const isCorrectVerdict = lastCorrect === true;
   const progressPct = total > 0 ? Math.round((score.total / total) * 100) : 0;
-  const prompt = quizType === "findIt" ? `Find ${answer.name} on the map` : "What state is highlighted?";
+  // For nameIt the map highlight is purely visual, so give assistive tech a non-visual
+  // narrowing hint (the region, never the answer itself).
+  const prompt =
+    quizType === "findIt"
+      ? `Find ${answer.name} on the map`
+      : `What state is highlighted? It is in the ${answer.region} region.`;
 
   return (
     <div className={styles.quizSidebar}>
@@ -45,10 +50,12 @@ export function QuizSidebar(props: {
       <div className={styles.quizQuestion} data-testid="question" data-state-id={quizType === "findIt" ? answer.id : undefined}>
         {quizType === "findIt" ? (
           <span>
-            🗺️ Find <strong>{answer.name}</strong> on the map!
+            <span aria-hidden="true">🗺️</span> Find <strong>{answer.name}</strong> on the map!
           </span>
         ) : (
-          <span>❓ What state is highlighted?</span>
+          <span>
+            <span aria-hidden="true">❓</span> What state is highlighted?
+          </span>
         )}
       </div>
 
@@ -75,7 +82,9 @@ export function QuizSidebar(props: {
         </div>
       ) : (
         <div className={styles.findItHint}>
-          <span>👆 Click the state on the map</span>
+          <span>
+            <span aria-hidden="true">👆</span> Click the state on the map
+          </span>
         </div>
       )}
     </div>

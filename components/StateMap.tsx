@@ -90,8 +90,12 @@ export function StateMap(props: {
           const hovered = hoveredId === id;
           const regionHovered = !!activeRegion && stateData.region === activeRegion;
           const fill = fillFor(stateData.region, { highlight, wrong, correct, selected, hovered, regionHovered });
-          const stroke = selected || regionHovered ? "#ffffff" : "#1a1a2e";
-          const strokeWidth = selected ? 2.5 : regionHovered ? 1.5 : 0.5;
+          // Quiz states (highlight/correct/wrong) and selection get a white outline so they
+          // read by luminance + border, not fill hue alone (the amber highlight would
+          // otherwise blend into the South/Southeast region colors).
+          const emphasized = highlight || correct || wrong || selected;
+          const stroke = emphasized || regionHovered ? "#ffffff" : "#1a1a2e";
+          const strokeWidth = emphasized ? 2.5 : regionHovered ? 1.5 : 0.5;
           const activate = () => interactive && onActivate(stateData);
 
           return (

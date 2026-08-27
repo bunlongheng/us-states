@@ -1,6 +1,7 @@
 "use client";
 
 import type { StateData } from "@/lib/states";
+import { isNewBest as computeNewBest } from "@/lib/settings";
 import styles from "@/app/states.module.css";
 
 export function VictoryCard(props: {
@@ -14,15 +15,15 @@ export function VictoryCard(props: {
   onStudy: () => void;
 }) {
   const { correct, total, best, missed, isFullRun, onRetryMissed, onPlayAgain, onStudy } = props;
-  const isNewBest = isFullRun && correct > best;
+  const isNewBest = computeNewBest(isFullRun, correct, best);
   const praise =
     correct === total
-      ? "Perfect score! 🏆"
+      ? { text: "Perfect score!", emoji: "🏆" }
       : correct >= total * 0.8
-        ? "Excellent! 🌟"
+        ? { text: "Excellent!", emoji: "🌟" }
         : correct >= total * 0.6
-          ? "Great job! 👏"
-          : "Keep practicing! 💪";
+          ? { text: "Great job!", emoji: "👏" }
+          : { text: "Keep practicing!", emoji: "💪" };
 
   return (
     <div className={styles.quizSidebar}>
@@ -37,8 +38,20 @@ export function VictoryCard(props: {
         <div className={styles.finalScore}>
           <span className={styles.finalScoreNum}>{correct}</span>
           <span className={styles.finalScoreDen}> / {total}</span>
-          <p className={styles.finalScoreLabel}>{praise}</p>
-          {isFullRun && <p className={styles.bestScore}>{isNewBest ? "🥇 New best!" : `Best: ${best} / ${total}`}</p>}
+          <p className={styles.finalScoreLabel}>
+            {praise.text} <span aria-hidden="true">{praise.emoji}</span>
+          </p>
+          {isFullRun && (
+            <p className={styles.bestScore}>
+              {isNewBest ? (
+                <>
+                  <span aria-hidden="true">🥇</span> New best!
+                </>
+              ) : (
+                `Best: ${best} / ${total}`
+              )}
+            </p>
+          )}
         </div>
 
         {missed.length > 0 && (

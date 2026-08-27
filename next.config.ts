@@ -5,11 +5,12 @@ import type { NextConfig } from "next";
 // on a phone. Production keeps script-src locked to 'self'.
 const isDev = process.env.NODE_ENV !== "production";
 
-// The app is fully self-contained: the US topojson is served from /public, so
-// connect-src stays 'self'. 'unsafe-inline' in script-src is required for Next's
-// framework bootstrap scripts on a statically prerendered page (a nonce would force
-// dynamic rendering); the app itself has no user input and no dangerouslySetInnerHTML,
-// so there is no first-party injection surface. object-src is locked to 'none'.
+// The app is fully self-contained: the US map is precomputed into lib/mapPaths.ts at
+// build time and bundled, so there is no runtime fetch and connect-src stays 'self'.
+// 'unsafe-inline' in script-src is required for Next's framework bootstrap scripts on a
+// statically prerendered page (a nonce would force dynamic rendering); the app itself has
+// no user input and no dangerouslySetInnerHTML, so there is no first-party injection
+// surface. object-src and frame-ancestors are locked to 'none'.
 const csp = [
   "default-src 'self'",
   "img-src 'self' data:",
@@ -18,7 +19,7 @@ const csp = [
   "font-src 'self'",
   "connect-src 'self'",
   "object-src 'none'",
-  "frame-ancestors 'self'",
+  "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "upgrade-insecure-requests",
@@ -30,9 +31,12 @@ const securityHeaders = [
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
-  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Explicitly opt in to indexing - overrides the automatic noindex Vercel applies to
+  // *.vercel.app deployment URLs so the public game is crawlable.
+  { key: "X-Robots-Tag", value: "index, follow" },
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",

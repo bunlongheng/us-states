@@ -13,7 +13,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "npm run start -- -p 3032",
+    command: "npm run build && npm run start -- -p 3032",
     url: "http://localhost:3032",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
