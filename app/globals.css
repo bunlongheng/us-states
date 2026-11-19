@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* iOS paints the safe areas beside the status pill with the html background */
+html {
+  background: #0b1120;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
